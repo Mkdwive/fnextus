@@ -17,6 +17,7 @@ export default function ProductCard({
                     src={`${image_url}`}
                     height={200} width={300}
                     alt={product_name || "image"}
+                    loading="eager"
                 />
             </Card.Image>
             <Card.Body className="p-4">
