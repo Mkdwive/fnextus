@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react'
+import React, { Suspense, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import Container from './Container'
@@ -8,8 +8,8 @@ import { IoClose } from "react-icons/io5";
 import Search from './Search'
 import { usePathname } from 'next/navigation'
 const Header = () => {
-   const pathname = usePathname();
-   
+    const pathname = usePathname();
+
     interface MenuItem {
         id: number,
         name: string,
@@ -39,12 +39,15 @@ const Header = () => {
             <Container className='relative'>
                 <nav className={`${!toggle ? "flex items-center" : "flex-col"}`}>
                     <div className='flex items-center flex-1 justify-between'>
-                            <Link href="/" className='relative flex items-center gap-lg-6 gap-3'>
-                                <Image className='max-w-full h-auto' src="/logo.png" width={40} height={40} alt='logo' />
-                                <span>{websiteName}</span>
-                            </Link>
+                        <Link href="/" className='relative flex items-center gap-lg-6 gap-3'>
+                            <Image className='max-w-full h-auto' src="/logo.png" width={40} height={40} alt='logo' />
+                            <span>{websiteName}</span>
+                        </Link>
 
-                      {pathname==="/" && <Search />}  
+                        {pathname === "/" && (
+                            <Suspense fallback="search">
+                                <Search />
+                            </Suspense>)}
 
                         <div className='navbar-toggler sm:hidden ms-4 flex items-center'>
                             <button className='border-0 text-2xl' onClick={handleToggle}>

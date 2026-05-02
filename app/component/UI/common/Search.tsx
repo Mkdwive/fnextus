@@ -1,54 +1,69 @@
 "use client";
-import { useEffect, useState } from "react";
+
+import { useEffect, useState, useRef } from "react";
 import { IoIosSearch } from "react-icons/io";
 import { IoClose } from "react-icons/io5";
-import { useRouter, useSearchParams } from "next/navigation";
-import { usePathname } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+
 const Search = () => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const initialCategory = searchParams.get("category") || "";
+
   const [category, setCategory] = useState(initialCategory);
   const [openSearch, setOpenSearch] = useState(false);
 
-  useEffect(() => {
-     if (pathname !== "/") return;
-    const delay = setTimeout(() => {
-      const params = new URLSearchParams(searchParams.toString());
-
-      if (category) {
-        params.set("category", category); 
-      } else {
-        params.delete("category");
-      }
-
-      router.replace(`/?${params.toString()}`);
-    }, 500);
-
-    return () => clearTimeout(delay);
-  }, [category, router, searchParams,pathname]);
+  const isUpdating = useRef(false);
 
   function handleSearch(ev: React.ChangeEvent<HTMLInputElement>) {
     setCategory(ev.target.value);
   }
 
+  useEffect(() => {
+    // Only run on homepage
+    if (pathname !== "/") return;
+
+    // Prevent loop updates
+    if (isUpdating.current) return;
+
+    const timer = setTimeout(() => {
+      isUpdating.current = true;
+
+      const params = new URLSearchParams(searchParams.toString());
+
+      if (category.trim()) {
+        params.set("category", category);
+      } else {
+        params.delete("category");
+      }
+
+      router.replace(`/?${params.toString()}`);
+
+      setTimeout(() => {
+        isUpdating.current = false;
+      }, 300);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [category,pathname,searchParams,router]);
+
   return (
     <>
-      {/* Desktop */}
-      <div className="mx-auto hidden sm:flex items-center border rounded-full px-4 py-2 text-sm ">
+      {/* Desktop Search */}
+      <div className="mx-auto hidden sm:flex items-center border rounded-full px-4 py-2 text-sm">
         <input
-          className="focus:border-0 focus:outline-0"
+          className="focus:outline-none"
           type="text"
           placeholder="Enter Category"
           value={category}
           onChange={handleSearch}
         />
-        <IoIosSearch/>
+        <IoIosSearch />
       </div>
 
-      {/* Mobile */}
+      {/* Mobile Search */}
       <div className="sm:hidden flex items-center ms-auto relative">
         <button onClick={() => setOpenSearch(true)} className="text-xl">
           <IoIosSearch />

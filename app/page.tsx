@@ -31,19 +31,23 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ [
               <div className="grid sm:grid-cols-2 grid-cols-1 md:grid-cols-4 gap-4">
                 {
 
-                  productList.map(({ code, product_name, brands, image_url,_id }) => (
-                    
-                    <Link href={`/product/${_id}`} key={_id}>
-                      <ProductCard
-                        className="group bg-white rounded-2xl border border-gray-200 overflow-hidden transition hover:shadow-xl hover:-translate-y-1 cursor-pointer"
-                        code={code??""}
-                        product_name={product_name || "product name"}
-                        brands={brands || ""}
-                        image_url={image_url || '/placeholder.jpg'}
-                      />
-                    </Link>
-                  ))
+                  productList.map(({ code, product_name, brands, image_url, _id }) => {
+                  if (!_id || typeof _id !== "string") return null;
+                    return (
+                      <div key={_id}>
+                        <Link href={`/product/${_id}`} className="block">
+                          <ProductCard
+                            className="group bg-white rounded-2xl border border-gray-200 overflow-hidden transition hover:shadow-xl hover:-translate-y-1 cursor-pointer"
+                            code={code || ""}
+                            product_name={product_name || "product name"}
+                            brands={brands || ""}
+                            image_url={image_url || "/placeholder.jpg"}
+                          />
+                        </Link>
+                      </div>
+                    )
 
+                  })
                 }
               </div>
             </>
